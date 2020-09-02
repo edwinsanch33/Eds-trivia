@@ -1,20 +1,32 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react';
+import { useHistory } from 'react-router-dom';
 
 const Home = () => {
-  const [startInfo, setStartInfo] = useState([
+  const history = useHistory();
+  const [startInfo, setStartInfo] = useState(
     {
       category: '',
       diffculty: '',
       token: '',
+      questions: []
     }
-  ]);
+  );
+
+  useEffect(() => {
+    if(startInfo.token.length < 1){
+      fetch('https://opentdb.com/api_token.php?command=request')
+      .then(r => r.json())
+      .then(d =>  startInfo.token = d.token)
+    }
+    console.log(startInfo)
+  })
 
   const handleChange = (e) => {
-    const values = [...startInfo]
+    const values = {...startInfo}
     if (e.target.name === "category"){
-      values[0].category = e.target.value
+      values.category = e.target.value
     } else if (e.target.name === "level"){
-      values[0].diffculty = e.target.value
+      values.diffculty = e.target.value
     }
     setStartInfo(values)
   }
@@ -22,10 +34,10 @@ const Home = () => {
   const submit = (e) => {
     e.preventDefault()
     console.log(startInfo)
-    console.log(`https://opentdb.com/api.php?amount=10&category=${startInfo[0].category}&difficulty=${startInfo[0].diffculty}`)
-    fetch(`https://opentdb.com/api.php?amount=10&category=${startInfo[0].category}&difficulty=${startInfo[0].diffculty}`)
+    fetch(`https://opentdb.com/api.php?amount=10&difficulty=${startInfo.diffculty}&category=${startInfo.category}&type=multiple&token=${startInfo.token}`)
       .then(response => response.json())
-      .then(data => console.log(data))
+      .then(data => startInfo.questions = data.results)
+      .then(history.push('/quiz'))
   }
   return (
     <div>
