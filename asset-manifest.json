@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/Eds-trivia/static/css/main.79208805.chunk.css",
+    "main.js": "/Eds-trivia/static/js/main.325ec357.chunk.js",
+    "main.js.map": "/Eds-trivia/static/js/main.325ec357.chunk.js.map",
+    "runtime-main.js": "/Eds-trivia/static/js/runtime-main.12c7feef.js",
+    "runtime-main.js.map": "/Eds-trivia/static/js/runtime-main.12c7feef.js.map",
+    "static/css/2.9b79e585.chunk.css": "/Eds-trivia/static/css/2.9b79e585.chunk.css",
+    "static/js/2.148d883a.chunk.js": "/Eds-trivia/static/js/2.148d883a.chunk.js",
+    "static/js/2.148d883a.chunk.js.map": "/Eds-trivia/static/js/2.148d883a.chunk.js.map",
+    "index.html": "/Eds-trivia/index.html",
+    "precache-manifest.12420ce9f686bc789286d376238b35ee.js": "/Eds-trivia/precache-manifest.12420ce9f686bc789286d376238b35ee.js",
+    "service-worker.js": "/Eds-trivia/service-worker.js",
+    "static/css/2.9b79e585.chunk.css.map": "/Eds-trivia/static/css/2.9b79e585.chunk.css.map",
+    "static/css/main.79208805.chunk.css.map": "/Eds-trivia/static/css/main.79208805.chunk.css.map",
+    "static/js/2.148d883a.chunk.js.LICENSE.txt": "/Eds-trivia/static/js/2.148d883a.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.12c7feef.js",
+    "static/css/2.9b79e585.chunk.css",
+    "static/js/2.148d883a.chunk.js",
+    "static/css/main.79208805.chunk.css",
+    "static/js/main.325ec357.chunk.js"
+  ]
+}

@@ -1,0 +1,1 @@
+{"version":3,"sources":["index.css"],"names":[],"mappings":"AAAA,MACE,iBAAkB,CAClB,YACF,CAEA,OACE,gBACF,CAEA,sBACE,aACF","file":"main.79208805.chunk.css","sourcesContent":["#root {\n  text-align: center;\n  display: grid;\n}\n\ndiv > h1 {\n  margin-top: 100px;\n}\n\n.category .difficulty {\n  padding: 2 rem;\n}\n\n\n"]}
