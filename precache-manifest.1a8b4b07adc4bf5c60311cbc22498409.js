@@ -1,18 +1,18 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "04d91bd898837b0dbb81f3e109f1441e",
+    "revision": "947f604481c94cef41f29f7e5f6569de",
     "url": "/Eds-trivia/index.html"
   },
   {
-    "revision": "3a2c24841ea1a94e16f1",
-    "url": "/Eds-trivia/static/css/2.9b79e585.chunk.css"
+    "revision": "cfb855e5029d5843f1c6",
+    "url": "/Eds-trivia/static/css/2.d9ad5f5c.chunk.css"
   },
   {
     "revision": "0edb3a2e67ef1db592ed",
     "url": "/Eds-trivia/static/css/main.79208805.chunk.css"
   },
   {
-    "revision": "3a2c24841ea1a94e16f1",
+    "revision": "cfb855e5029d5843f1c6",
     "url": "/Eds-trivia/static/js/2.148d883a.chunk.js"
   },
   {
