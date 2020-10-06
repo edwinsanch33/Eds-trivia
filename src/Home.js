@@ -1,24 +1,28 @@
 import React, {useState, useEffect} from 'react';
 import { useHistory } from 'react-router-dom';
+import Quiz from './Quiz';
+
+
 
 const Home = () => {
-  const history = useHistory();
+  const history = useHistory()
   const [startInfo, setStartInfo] = useState(
     {
-      category: '',
-      diffculty: '',
+      category: 'any',
+      diffculty: 'any',
       token: '',
-      questions: []
+      questions: [],
+      start: false
     }
   );
 
+  // token used to mix up questions per session expires after 6 hours
   useEffect(() => {
     if(startInfo.token.length < 1){
       fetch('https://opentdb.com/api_token.php?command=request')
       .then(r => r.json())
       .then(d =>  startInfo.token = d.token)
     }
-    console.log(startInfo)
   })
 
   const handleChange = (e) => {
@@ -29,15 +33,35 @@ const Home = () => {
       values.diffculty = e.target.value
     }
     setStartInfo(values)
+    console.log(startInfo)
   }
 
   const submit = (e) => {
     e.preventDefault()
     console.log(startInfo)
-    fetch(`https://opentdb.com/api.php?amount=10&difficulty=${startInfo.diffculty}&category=${startInfo.category}&type=multiple&token=${startInfo.token}`)
+     fetch(`https://opentdb.com/api.php?amount=10&difficulty=${startInfo.diffculty}&category=${startInfo.category}&type=multiple&token=${startInfo.token}&encode=url3986`)
       .then(response => response.json())
-      .then(data => startInfo.questions = data.results)
-      .then(history.push('/quiz'))
+      .then(data => setStartInfo({...startInfo, questions: data.results, start: true}))
+      .then(() => {
+        const element = document.getElementById(1);
+        element.scrollIntoView({behavior: "smooth", block: "center"});
+      })
+  }
+  const prev = (index) => {
+    if(index > 1){
+      history.push(`./#${index-1}`)
+      const id = window.location.hash.replace('#/#', '');
+      const element = document.getElementById(id);
+      element.scrollIntoView({behavior: "smooth", block: "center"});
+    }
+  }
+  const next = (index) => {
+    if(index < 10){
+      history.push(`./#${index+1}`)
+      const id = window.location.hash.replace('#/#', '');
+      const element = document.getElementById(id);
+      element.scrollIntoView({behavior: "smooth", block: "center"});
+    }
   }
   return (
     <div>
@@ -80,6 +104,14 @@ const Home = () => {
           <button  className="btn btn-lg btn-outline-success" onClick={submit}>Start</button>
         </form>
       </div>
+      { startInfo.start ? startInfo.questions.map( (question,index) => (
+        <>
+          <Quiz key={index} id={index+1} questionInfo={question} /> 
+          <button onClick={() => prev(index+1)}>Prev</button>
+          <button onClick={() => next(index+1)}>Next</button> 
+        </>)) 
+        : null 
+      }
     </div>
   )
 }
