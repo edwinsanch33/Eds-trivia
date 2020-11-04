@@ -5,7 +5,7 @@ import Quiz from './Quiz';
 
 
 const Home = () => {
-  const history = useHistory()
+  const history = useHistory();
   const [startInfo, setStartInfo] = useState(
     {
       category: 'any',
@@ -16,6 +16,10 @@ const Home = () => {
     }
   );
 
+  const [userAnswers] = useState([]);
+  const [correctAnswers] = useState([]);
+  const [userScore,setUserScore] = useState([]);
+
   // token used to mix up questions per session expires after 6 hours
   useEffect(() => {
     if(startInfo.token.length < 1){
@@ -24,6 +28,14 @@ const Home = () => {
       .then(d =>  startInfo.token = d.token)
     }
   })
+
+  const changeValue = (e) => {
+    // const answers = {...userAnswers}
+    userAnswers[e.target.name-1] = e.target.value
+    // setUserAnswers(answers)
+    console.log(userAnswers)
+    checkAnswers(e.target.name-1)
+  }
 
   const handleChange = (e) => {
     const values = {...startInfo}
@@ -36,12 +48,28 @@ const Home = () => {
     console.log(startInfo)
   }
 
+  const checkAnswers = (qnumber) => {
+      if(decodeURIComponent(correctAnswers[qnumber]) === userAnswers[qnumber]){
+        userScore[qnumber] = 1
+      } else userScore[qnumber] = 0
+      if(userAnswers.length === 10) {
+        userScore.reduce((a, b) => a + b, 0)
+      }
+      console.log(userScore.reduce((a, b) => a + b, 0))
+      console.log(userScore)
+  }
+
   const submit = (e) => {
     e.preventDefault()
     console.log(startInfo)
      fetch(`https://opentdb.com/api.php?amount=10&difficulty=${startInfo.diffculty}&category=${startInfo.category}&type=multiple&token=${startInfo.token}&encode=url3986`)
       .then(response => response.json())
-      .then(data => setStartInfo({...startInfo, questions: data.results, start: true}))
+      .then(data => {
+        setStartInfo({...startInfo, questions: data.results, start: true})
+        for(let i= 0; i < 10; i++){
+          correctAnswers[i] = data.results[i].correct_answer
+        }
+      })
       .then(() => {
         const element = document.getElementById(1);
         element.scrollIntoView({behavior: "smooth", block: "center"});
@@ -60,6 +88,10 @@ const Home = () => {
       history.push(`./#${index+1}`)
       const id = window.location.hash.replace('#/#', '');
       const element = document.getElementById(id);
+      element.scrollIntoView({behavior: "smooth", block: "center"});
+    } else if (index === 10){
+      setUserScore(userScore.reduce((a, b) => a + b, 0))
+      const element = document.getElementById("score");
       element.scrollIntoView({behavior: "smooth", block: "center"});
     }
   }
@@ -105,13 +137,14 @@ const Home = () => {
         </form>
       </div>
       { startInfo.start ? startInfo.questions.map( (question,index) => (
-        <>
-          <Quiz key={index} id={index+1} questionInfo={question} /> 
+        <div onChange={changeValue} key={index} id={index+1} className="card bg-light" style={{width: 'auto', alignContent: 'center', height: '100vh', margin: '20px'}}>
+          <Quiz id={index+1} questionInfo={question} /> 
           <button onClick={() => prev(index+1)}>Prev</button>
           <button onClick={() => next(index+1)}>Next</button> 
-        </>)) 
+        </div>)) 
         : null 
       }
+      { startInfo.start ? <h2 id="score"> {userScore} / 10 </h2> : null }
     </div>
   )
 }
