@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 
 const Quiz = (props) => {
   const history = useHistory();
-  const {questionInfo, id} = props
+  const {questionInfo, id, totalQs} = props
   const {question, incorrect_answers, correct_answer, category} = questionInfo
   const answers = [...incorrect_answers, correct_answer]
   console.log(answers)
@@ -21,16 +21,16 @@ const Quiz = (props) => {
     }
     return array;
   }
-
+// navigation on choice click
   const next = (index) => {
-    if(index < 10){
+    if(index < totalQs){
       history.push(`./#${index+1}`)
       const id = window.location.hash.replace('#/#', '');
       const element = document.getElementById(id);
       element.scrollIntoView({behavior: "smooth", block: "center"});
     }
   }
-  
+
   return (
     <>
       <h2 className="card-header">

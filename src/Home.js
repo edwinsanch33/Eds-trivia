@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import { useHistory } from 'react-router-dom';
 import Quiz from './Quiz';
 
@@ -15,25 +15,22 @@ const Home = () => {
       start: false
     }
   );
-
+  let [totalQs,setTotalQs] = useState(10)
   const [userAnswers] = useState([]);
   const [correctAnswers] = useState([]);
   const [userScore,setUserScore] = useState([]);
 
   // token used to mix up questions per session expires after 6 hours
-  useEffect(() => {
-    if(startInfo.token.length < 1){
-      fetch('https://opentdb.com/api_token.php?command=request')
-      .then(r => r.json())
-      .then(d =>  startInfo.token = d.token)
-    }
-  })
+  // useEffect(() => {
+  //   if(startInfo.token.length < 1){
+  //     fetch('https://opentdb.com/api_token.php?command=request')
+  //     .then(r => r.json())
+  //     .then(d =>  startInfo.token = d.token)
+  //   }
+  // })
 
   const changeValue = (e) => {
-    // const answers = {...userAnswers}
     userAnswers[e.target.name-1] = e.target.value
-    // setUserAnswers(answers)
-    console.log(userAnswers)
     checkAnswers(e.target.name-1)
   }
 
@@ -45,7 +42,6 @@ const Home = () => {
       values.diffculty = e.target.value
     }
     setStartInfo(values)
-    console.log(startInfo)
   }
 
   const checkAnswers = (qnumber) => {
@@ -55,26 +51,48 @@ const Home = () => {
       if(userAnswers.length === 10) {
         userScore.reduce((a, b) => a + b, 0)
       }
-      console.log(userScore.reduce((a, b) => a + b, 0))
-      console.log(userScore)
   }
 
   const submit = (e) => {
     e.preventDefault()
-    console.log(startInfo)
-     fetch(`https://opentdb.com/api.php?amount=10&difficulty=${startInfo.diffculty}&category=${startInfo.category}&type=multiple&token=${startInfo.token}&encode=url3986`)
+    let query = `https://opentdb.com/api.php?amount=${totalQs}&type=multiple&encode=url3986&`
+    const getQuery = () =>{
+      if(typeof(startInfo.category) === "number" && typeof(startInfo.diffculty) === "number") {
+        return query = `https://opentdb.com/api.php?amount=${totalQs}&category=${startInfo.category}&difficulty=${startInfo.diffculty}&type=multiple&encode=url3986&`
+      } else if ( typeof(startInfo.category) === "number") {
+        return query = `https://opentdb.com/api.php?amount=${totalQs}&category=${startInfo.category}&type=multiple&encode=url3986&`
+      } else if (typeof(startInfo.diffculty) === "number") {
+        return query = `https://opentdb.com/api.php?amount=${totalQs}&difficulty=${startInfo.diffculty}&type=multiple&encode=url3986&`
+      } 
+    }
+    const getInfo = () => {
+      fetch(`${query}`)
       .then(response => response.json())
       .then(data => {
-        setStartInfo({...startInfo, questions: data.results, start: true})
-        for(let i= 0; i < 10; i++){
-          correctAnswers[i] = data.results[i].correct_answer
+        if(data.response_code === 0){
+          setTotalQs(totalQs)
+          setStartInfo({...startInfo, questions: data.results, start: true})
+          for(let i= 0; i < totalQs; i++){
+            correctAnswers[i] = data.results[i].correct_answer
+          }
+          const element = document.getElementById(1);
+          element.scrollIntoView({behavior: "smooth", block: "center"});
+        } else if (data.response_code === 1) {
+          setTotalQs(totalQs--)
+          getInfo()
+        } else if (data.response_code === 4){
+          fetch(`https://opentdb.com/api_token.php?command=reset&token=${startInfo.token}`)
+            .then(r => r.json())
+            .then(d =>  startInfo.token = d.token)
+          setStartInfo(startInfo)
+          getInfo()
         }
       })
-      .then(() => {
-        const element = document.getElementById(1);
-        element.scrollIntoView({behavior: "smooth", block: "center"});
-      })
+    }
+    getQuery()
+    getInfo()
   }
+  // navigation for button below questions 
   const prev = (index) => {
     if(index > 1){
       history.push(`./#${index-1}`)
@@ -84,12 +102,12 @@ const Home = () => {
     }
   }
   const next = (index) => {
-    if(index < 10){
+    if(index < totalQs){
       history.push(`./#${index+1}`)
       const id = window.location.hash.replace('#/#', '');
       const element = document.getElementById(id);
       element.scrollIntoView({behavior: "smooth", block: "center"});
-    } else if (index === 10){
+    } else if (index === totalQs){
       setUserScore(userScore.reduce((a, b) => a + b, 0))
       const element = document.getElementById("score");
       element.scrollIntoView({behavior: "smooth", block: "center"});
@@ -138,13 +156,18 @@ const Home = () => {
       </div>
       { startInfo.start ? startInfo.questions.map( (question,index) => (
         <div onChange={changeValue} key={index} id={index+1} className="card bg-light" style={{width: 'auto', alignContent: 'center', height: '100vh', margin: '20px'}}>
-          <Quiz id={index+1} questionInfo={question} /> 
+          <Quiz id={index+1} questionInfo={question} totalQs={totalQs}/> 
           <button onClick={() => prev(index+1)}>Prev</button>
           <button onClick={() => next(index+1)}>Next</button> 
         </div>)) 
         : null 
       }
-      { startInfo.start ? <h2 id="score"> {userScore} / 10 </h2> : null }
+      { startInfo.start ? 
+        <div id="score" style={{width: 'auto', alignContent: 'center', height: '100vh', margin: '20px'}}>
+          <h1>Awesome! You Scored</h1>
+          <h2> {userScore} / {totalQs} </h2>
+        </div>
+      : null }
     </div>
   )
 }
