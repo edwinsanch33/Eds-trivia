@@ -1,4 +1,4 @@
-## Ed's Trivia Game
+## Ed's Trivia Games
 Test your skills in trivia and see what score you get. After finishing you can try again and/or invite a friend to test their knowledge.
 
 ## Lofi Sketch
